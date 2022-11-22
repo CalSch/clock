@@ -1,6 +1,28 @@
 #!/usr/bin/env python3
-import os,math,time
+import os,math,time,argparse
 from datetime import datetime
+
+
+colors={
+    "red":"41",
+    "green":"42",
+    "yellow":"43",
+    "blue":"44",
+    "magenta":"45",
+    "cyan":"46",
+    "white":"47"
+}
+
+parser = argparse.ArgumentParser(
+    prog = 'Clock',
+    description = 'A clock app',
+    epilog = 'Source code at https://github.com/CalSch/clock')
+parser.add_argument('-f','--format',default="%I:%M:%S %p")
+parser.add_argument('-c','--color',default='cyan')
+
+args = parser.parse_args()
+
+
 
 font={
 "0":"""
@@ -40,7 +62,7 @@ font={
    #
 ### """,
 "6":"""
- ###
+ ##
 #
 ###
 #  #
@@ -68,18 +90,48 @@ font={
  ##
 
  ##
- ##"""
+ ##""",
+"A":"""
+ ##
+#  #
+####
+#  #
+#  #""",
+"P":"""
+###
+#  #
+###
+#
+#   """,
+"M":"""
+#   #
+## ##
+# # #
+#   #
+#   #""",
+"-":"""
+
+
+ ##
+
+""",
+" ":"""
+
+
+
+
+"""
 }
 
-c_width=8
+c_width=10
 c_height=5
 
 def padSpace(s,l):
-    return s+(" "*(l-len(s)))
+    return s+(" "*(int(l)-len(s)))
 
 def printTime():
     now=datetime.now()
-    time_string=now.strftime("%H:%M:%S")
+    time_string=now.strftime(args.format)
     size=os.get_terminal_size()
     width=size.columns
     height=size.lines
@@ -90,25 +142,25 @@ def printTime():
             font_char=font[char]
             i=0
             for line in font_char.split('\n'):
-                line=padSpace(line,4)
+                line=padSpace(line,c_width/2)
                 line=line.replace(" ","  ").replace("#","##")
-                line=line.replace("#","\x1b[46m \x1b[0m")
+                line=line.replace("#","\x1b["+colors[args.color]+"m \x1b[0m")
                 string+=line
                 string+="\x1b[1B\x1b["+str(c_width)+"D"
                 i+=1
             #string+=padSpace(font_char,4).replace("\n","\x1b[1B\x1b[2D")
-            string+="\x1b["+str(c_height+1)+"A\x1b["+str(c_width+2)+"C"
+            string+="\x1b["+str(c_height+1)+"A\x1b["+str(c_width)+"C"
         except KeyError:
             string+="X"
     
     print("\x1b[2J\x1b[H")
-    print(" "*math.floor((width-len(time_string))/2)+time_string)
-    print("\n"*(math.floor((height-8)/2)-2))
+    print(" "*int((width-len(time_string))/2)+time_string)
+    print("\n"*(int((height-8)/2)-2))
     print("\n\n\n\n\n\n\n\x1b[7A")
 
-    print((" "*math.floor((width-len(time_string)*(c_width+2))/2))+string)
+    print((" "*int((width-len(time_string)*(c_width+2))/2))+string)
 
-    print("\n"*(math.floor((height-(c_height))/2)+2))
+    print("\n"*(int((height-(c_height))/2)+2))
     
 
 while True:
