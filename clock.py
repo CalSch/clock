@@ -17,8 +17,9 @@ parser = argparse.ArgumentParser(
     prog = 'Clock',
     description = 'A clock app',
     epilog = 'Source code at https://github.com/CalSch/clock')
-parser.add_argument('-f','--format',default="%I:%M:%S %p")
-parser.add_argument('-c','--color',default='cyan')
+parser.add_argument('-f','--format',default="%I:%M:%S %p",help="The time format of the clock")
+parser.add_argument('-c','--color',default='cyan',help="The color of the clock")
+parser.add_argument('-r','--refresh',metavar="SECONDS",default='0.5',help="The seconds between refreshing the clock, values below 0.02 may cause the clock to flicker based on the terminal's speed",type=float)
 
 args = parser.parse_args()
 
@@ -165,6 +166,6 @@ def printTime():
 
 while True:
     printTime()
-    time.sleep(0.5)
+    time.sleep(float(args.refresh))
 
 
